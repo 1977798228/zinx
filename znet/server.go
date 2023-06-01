@@ -121,7 +121,6 @@ func newServerWithConfig(config *zconf.Config, ipVersion string, opts ...Option)
 // NewServer creates a server handle
 // (创建一个服务器句柄)
 func NewServer(opts ...Option) ziface.IServer {
-	fmt.Println("sdfafadsf")
 	return newServerWithConfig(zconf.GlobalObject, "tcp", opts...)
 }
 
