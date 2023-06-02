@@ -241,7 +241,7 @@ func (c *Connection) StartReader() {
 					dBuf = append(dBuf, 0)
 					dBuf = append(dBuf, 0)
 					dBuf = append(dBuf, 0)
-					dBuf = append(dBuf, 88)
+					dBuf = append(dBuf, 18)
 					dBuf = append(dBuf, 0)
 					dBuf = append(dBuf, 0)
 					dBuf = append(dBuf, 0)
