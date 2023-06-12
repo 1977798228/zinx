@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"net"
+	"regexp"
 	"sync"
 	"time"
 	
@@ -233,23 +234,22 @@ func (c *Connection) StartReader() {
 			if c.frameDecoder != nil {
 				// Decode the 0-n bytes of data read
 				// (为读取到的0-n个字节的数据进行解码)
+				
 				var bufArrays [][]byte
-				if buffer[0] == 0 {
-					bufArrays = c.frameDecoder.Decode(buffer[0:n])
+				unpack, _ := c.packet.Unpack(buffer)
+				if regexp.MustCompile(`&.+!`).Match(buffer) && unpack == nil {
+					r := regexp.MustCompile(`&.+!`).FindAllSubmatch(buffer, -1)
+					for _, match := range r {
+						if len(match) > 0 {
+							msg, _ := c.packet.Pack(zpack.NewMsgPackage(18, match[0]))
+							bufArrays = c.frameDecoder.Decode(msg)
+						}
+					}
 				} else {
-					var dBuf []byte
-					dBuf = append(dBuf, 0)
-					dBuf = append(dBuf, 0)
-					dBuf = append(dBuf, 0)
-					dBuf = append(dBuf, 18)
-					dBuf = append(dBuf, 0)
-					dBuf = append(dBuf, 0)
-					dBuf = append(dBuf, 0)
-					dBuf = append(dBuf, 70)
-					dBuf = append(dBuf, buffer[0:n]...)
-					bufArrays = c.frameDecoder.Decode(dBuf)
+					bufArrays = c.frameDecoder.Decode(buffer[0:n])
 				}
 				
+				// 构建正则表达式
 				if bufArrays == nil {
 					continue
 				}
